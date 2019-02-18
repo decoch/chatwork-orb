@@ -1,0 +1,72 @@
+version: 2.1
+
+####################################################
+## GitHub: https://github.com/decoch/chatwork-orb ##
+####################################################
+
+description: |
+  Easily integrate custom Chatwork notifications. Create custom messages for any job or receive status updates.
+
+## Requirements ##
+## - Bash
+## - cURL
+
+commands:
+  ## NOTIFY ##
+  notify:
+    description: Notify a Chatwork with a custom message
+    parameters:
+      token:
+        description: Enter either your token value or use the CircleCI UI to add your token under the 'CHATWORK_TOKEN' env var
+        type: string
+        default: ${CHATWORK_TOKEN}
+      message:
+        description: Enter custom message.
+        type: string
+        default: Your job on CircleCI has completed.
+      room-id:
+        description: Enter room id.
+        type: string
+    steps:
+      - run:
+          name: Chatwork Notification
+          command: |
+            # Provide error if non-bash shell
+            if [ $(echo $SHELL | grep -c bash) -ne 1 ]; then
+              echo Bash not installed.
+              exit 1
+            fi
+            # Provide error if no room id is set
+            if [ -z "<< parameters.room-id >>" ]; then
+              echo "NO ROOM ID SET"
+              exit 1
+            fi
+            # Provide error if no token is set and error. Otherwise continue
+            if [ -z "<< parameters.token >>" ]; then
+              echo "NO CHATWORK TOKEN SET"
+              echo "Please input your CHATWORK_TOKEN value either in the settings for this project, or as a parameter for this orb."
+              exit 1
+            else
+              # Webhook properly set.
+              echo Notifying Chatwork
+              curl -X POST -H "X-ChatWorkToken: << parameters.token >>" -d "body=<< parameters.message >>&self_unread=0" "https://api.chatwork.com/v2/rooms/<< parameters.room-id>>/messages"
+            fi
+
+#
+# Usage examples of Chatwork Orb
+#
+examples:
+  notify:
+    description: "Notify a Chatwork a custom message at any point in a job with this custom step. More docs here: https://github.com/decoch/chatwork-orb"
+    usage:
+      version: 2.1
+      orbs:
+        chatwork: decoch/chatwork@volatile
+      jobs:
+        build:
+          docker:
+            - image: <docker image>
+          steps:
+            - chatwork/notify:
+                message: "This is a custom message notification" # Optional: Enter your own message
+

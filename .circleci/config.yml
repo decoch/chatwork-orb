@@ -1,0 +1,18 @@
+version: 2.1
+
+orbs:
+  chatwork: decoch/chatwork@dev:first
+
+jobs:
+  build:
+    docker:
+    - image: circleci/node
+    steps:
+    - line/notify:
+        message: "Notification test for the chatwork-orb"
+
+workflows:
+   main:
+     jobs:
+     - build
+
