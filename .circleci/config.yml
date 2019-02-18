@@ -8,7 +8,7 @@ jobs:
     docker:
     - image: circleci/node
     steps:
-    - line/notify:
+    - chatwork/notify:
         message: "Notification test for the chatwork-orb"
         room-id: "14630985"
 
