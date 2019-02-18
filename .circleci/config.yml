@@ -10,6 +10,7 @@ jobs:
     steps:
     - line/notify:
         message: "Notification test for the chatwork-orb"
+        room-id: "14630985"
 
 workflows:
    main:
